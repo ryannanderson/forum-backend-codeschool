@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Krona+One&family=Quicksand&family=Varela+Round&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Forum App</title>
+</head>
+<body>
+<div id="wrapper">
+<div class="header-bar"></div>
+    <header v-on:click = "page == 'forum'" >
+        <img src="redditlogo.svg" class="logo">
+        <h1>knock-off reddit</h1>
+    </header>
+<main>
+<div id="app">
+
+    <h1> Forum App </h1>
+    <button v-on:click = "page = 'forum'" class="button"> Forum </button>
+    <button v-on:click="page = 'thread'" class="button"> New Thread </button>
+    
+    
+    <div v-if="page == 'forum'">
+
+    <!-- Category drop down select -->
+        <h3>Select a category</h3>
+        <select v-model="selected_category">
+            <option v-for="category in categories">
+                {{ category }}
+
+            </option>
+        </select>
+        {{ selected_category }}
+    
+
+    <!-- Displaying threads -->
+    <div v-show="sortedThreads.length == 0">
+        {{ threads_empty }}
+    </div>
+    <ul>
+        
+        <li v-for="thread in sortedThreads">
+            <div v-on:click="getPosts(thread._id)">
+                <div class="box-around">
+            <h2> {{ thread.name }} </h2>
+            <p> {{ thread.author }} </p>
+            <p> {{ thread.description }} </p>
+            <p> {{ thread.category }} </p>
+
+            <button v-on:click="deleteThread(thread._id)" class="button">Delete</button>
+        </div>
+        </div>
+        </li>
+        
+    </ul>
+    </div>
+    <!-- create new thread -->
+
+    <!-- if page is posts -->
+    <div v-else-if= "page == 'posts'">
+        <!-- display thread that was clicked on -->
+        <h2> {{ postings.name}}</h2>
+        <p> {{ postings.author }}</p>
+        <p> {{ postings.description }}</p>
+        <p> {{ postings.category }}</p>
+        <h2> Posts </h2>
+        <div v-show="postings.length == 0">
+            {{ posts_empty }}
+        </div>
+        <ul>
+            <li v-for="post in postings.posts">
+                <p class="author-name"> {{ post.author }} </p>
+                <p> {{ post.body }} </p>
+                <button v-on:click="deletePost(post)" class="button">Delete</button>
+            </li>
+        </ul>
+        
+        <div class="create">
+            <h2>Comment:</h2>
+        <label>Author</label>
+        <input type="text" v-model="new_author" placeholder="put your name here">
+        <label>Body</label>
+        <input type="text" v-model="new_body" placeholder="leave your reply">
+        <button v-on:click="createPost(postings._id)" class="button">Send</button>
+        </div>
+    </div>
+
+    <div v-else-if="page == 'thread'">
+    <div class="create">
+    <h2> Create Thread </h2>
+    <label>Title</label>
+    <input type="text" v-model="new_name" placeholder="Enter title">
+    <label>Author</label>
+    <input type="text" v-model="new_author" placeholder="Enter author">
+    <label>Description</label>
+    <input type="text" v-model="new_description" placeholder="Enter description">
+    <label>Category</label>
+    <select v-model="new_category">
+        <option v-for="category in categories" v-bind:value="category"> {{ category }}</option>
+    </select>
+    <button v-on:click="createThread()" class="button">Submit</button>
+    </div>
+    </div>
+</div>
+</main>
+<footer>
+    <p>footer</p>
+</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="app.js"></script> 
+</body>
+</html>
