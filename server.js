@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 
 const server = express();
-const store = require("./model")
+const { Thread } = require("./model")
+
 server.use(cors());
 server.use(express.json({}));
 
@@ -20,89 +21,189 @@ server.use((req, res, next) => {
     next();
   });
 
-  server.get("/thread", (req, res) =>{
+  server.get("/thread", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     console.log("getting thread")
-    res.json({});
-
+    Thread.find({}, (err, threads) => {
+      if (err != null) {
+  
+        res.status(500).json({
+          error: err,
+          message: "could not list threads"
+        });
+        return;
+      }
+      res.status(200).json(threads)
+    });
   });
 
   server.get("/thread/:id", (req, res) =>{
     res.setHeader("Content-Type", "application/json");
     console.log(`getting thead with id: ${req.params.id}`);
-    res.json({});
-  })
-
-  server.post("/thread", (req, res) =>{
-    res.setHeader("Content-Type", "application/json");
-    console.log("creating thread with body", req.body);
-    res.json({});
+    Thread.findById(req.params.id, ( err, thread ) => {
+      if (err != null) {
+        res.status(500).json({
+          error: err,
+          message: "could not get threads by id"
+        });
+        return; 
+        } else if (thread === null) {
+        res.status(404).json({
+                message: `thread with id: ${req.params.id} does not exist`,
+                error: err
+            })
+            return;
+    }
+      res.status(200).json(thread)
   });
+});
 
-  server.delete("/thread/:id", (req, res) =>{
+  server.post("/thread", function (req, res) {
     res.setHeader("Content-Type", "application/json");
-    console.log(`deleting thread with id: ${req.params.id}`)
-    res.json({});
-  })
+    console.log(`creating a thread with body`, req.body);
+  
+    if (
+        req.body.name === null || 
+        req.body.name === undefined || 
+        req.body.name === ""
+        ) {
+        console.log("name empty when creating thread");
+        res.status(500).json({
+            message: "unable to create thread",
+            error: "name empty when creating thread",
+        });
+        return;
+    } 
+    if (
+        req.body.author === null ||
+        req.body.author === undefined ||
+        req.body.author === ""
+    ) {
+        console.log("author empty when creating thread");
+        res.status(500).json({
+            message: "unable to create thread",
+            error: "author empty when creating thread"
+        });
+        return
+    } 
+    if (
+        req.body.description === null ||
+        req.body.description === undefined ||
+        req.body.description === ""
+    ) {
+        console.log("description empty when creating thread");
+        res.status(500).json({
+            message: "unable to create thread",
+            error: "description empty when creating thread"
+        });
+        return;
+    } 
+
+  let creatingThread = {
+      name: req.body.name || "",
+      description: req.body.author || "",
+      done: req.body.description || "",
+  };
+
+  Thread.create(creatingThread, (err, thread) =>{
+      // check if there is an error
+      if(err) {
+          console.log(`unable to create thread`)
+          res.status(500).json({
+              message: "unable to create thread",
+              error: err,
+          });
+          return;
+      }
+      res.status(201).json(thread);
+  });
+});
+
+server.delete("/thread/:id", function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  console.log(`deleting thread with id: ${req.params.id}`);
+ 
+  Thread.findByIdAndDelete(req.params.id, function(err, thread){
+      if (err) {
+          console.log(`There was an error finding a thread with id ${req.params.id}`)
+          res.status(500).json({
+                  error: `Unable to find thread with id ${req.params.id}`,
+                  error: err
+              });
+          return; 
+          } else if (thread === null) {
+          res.status(404).json({
+                  message: `thread with id: ${req.params.id} does not exist`,
+                  error: err
+              })
+              return;
+      }
+        res.status(200).json(thread)
+  });
+});
 
   server.post("/post", (req, res) => {
     res.setHeader("Content-Type", "application/json");
     console.log("creating post with body", req.body);
-    res.json({});
+
+    let newPost = {
+      author: req.body.author || "",
+      body: req.body.body || "",
+      thread_id: req.body.thread_id || ""
+    };
+
+    Thread.findByIdAndUpdate(req.body.thread_id, 
+      { 
+      $push: { posts: newPost }
+      }, 
+      {
+        new: true,
+      },
+      (err, thread) => {
+      if (err != null) {
+        res.status(500).json({
+          error: err,
+          message: "could not get posts"
+        });
+        return; 
+        } else if (thread === null) {
+        res.status(404).json({
+                message: `thread with id: ${req.params.id} does not exist`,
+                error: err
+            })
+            return;
+    }
+    })
   });
 
   server.delete("/post/:thread_id/:post_id", (req, res) => {
     res.setHeader("Content-Type", "application/json");
-    console.log(`deleting post with id: ${req.params.id}`);
-    res.json({});
+    console.log(`deleting post with id: ${req.params.post_id} on thread with id: ${req.params.thread_id}`);
+    Thread.findByIdAndUpdate(req.params.thread_id, 
+    {
+      $pull: { 
+        posts: {
+          _id: req.params.post_id,
+        }
+      }
+    },
+    (err, thread) => {
+      if (err != null) {
+        res.status(500).json({
+          error: err,
+          message: "could not get posts"
+        });
+        return; 
+        } else if (thread === null) {
+        res.status(404).json({
+                message: `thread with id: ${req.params.id} does not exist`,
+                error: err
+            })
+            return;
+      }
+    });
   });
 
-// server.get("/thread", (req, res) => {
-//     res.setHeader("Content-Type", "application/json");
-//     console.log("getting all threads");
-//     // return all of the todos in the store
-//     res.send(JSON.stringify(store));
-//   });
 
-// server.get("/thread/:id", function(req, res){
-//     res.setHeader("Content-Type", "application/json");
-//     console.log(`getting thread with id: ${req.params.id}`)
-//     if (store[req.params.id] === undefined){
-//         res.status(404).send(
-//             JSON.stringify({
-//                 error: "not found",
-//             })
-//         );
-//         return;
-//     }
-//     res.send(JSON.stringify(store[req.params.id]));
-// })
-
-// let nextID = 0;
-
-// server.post("/thread", function (req, res){
-//     res.setHeader("Content-Type", "application/json");
-//     console.log(`creating a thread with body`, req.body);
-//     req.body.id = nextID;
-//     store[nextID] = req.body;
-//     nextID++;
-//     res.status(201).send(JSON.stringify(store[req.body.id]));
-// });
-
-// server.delete("/thread/:id", function(req, res){
-//     res.setHeader("Content-Type", "application/json")
-//     console.log(`deleting todo with id: ${req.params.id}`);
-//     if (store[req.params.id] === undefined) {
-//       res.status(404).send(
-//         JSON.stringify({
-//           error: "not found",
-//         })
-//       );
-//       return;
-//     }
-//     let thread = store[req.params.id];
-//     delete store[req.params.id];
-//     res.send(JSON.stringify(thread));
-// });
 
 module.exports = server;
