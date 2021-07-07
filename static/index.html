@@ -78,15 +78,17 @@
             {{ posts_empty }}
         </div>
         </div>
+        <div class="box-around">
         <ul>
             <li v-for="post in postings.posts">
-                <div class="box-around">
+                
                 <p class="author-name"> {{ post.author }} </p>
                 <p> {{ post.body }} </p>
                 <button v-on:click="deletePost(post)" class="button">Delete</button>
-                </div>
+                
             </li>
         </ul>
+        </div>
         
         <div class="create">
             <h2>Comment:</h2>
