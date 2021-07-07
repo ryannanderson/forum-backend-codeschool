@@ -30,7 +30,7 @@ var app = new Vue({
         new_author: "",
         new_body: "",
 
-        url: "http://forum2021.codeschool.cloud",
+        url: "https://cs-forum-app-2021.herokuapp.com",
 
         threads: [
             
