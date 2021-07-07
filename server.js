@@ -6,6 +6,7 @@ const { Thread } = require("./model")
 
 server.use(cors());
 server.use(express.json({}));
+server.use(express.static('static'))
 
 server.use((req, res, next) => {
     console.log(
@@ -103,6 +104,7 @@ server.use((req, res, next) => {
       name: req.body.name || "",
       description: req.body.author || "",
       done: req.body.description || "",
+      category: req.body.category || ""
   };
 
   Thread.create(creatingThread, (err, thread) =>{
@@ -124,10 +126,10 @@ server.delete("/thread/:id", function (req, res) {
   console.log(`deleting thread with id: ${req.params.id}`);
  
   Thread.findByIdAndDelete(req.params.id, function(err, thread){
-      if (err) {
+      if (err != null) {
           console.log(`There was an error finding a thread with id ${req.params.id}`)
           res.status(500).json({
-                  error: `Unable to find thread with id ${req.params.id}`,
+                  message: `Unable to find thread with id ${req.params.id}`,
                   error: err
               });
           return; 
@@ -154,7 +156,7 @@ server.delete("/thread/:id", function (req, res) {
 
     Thread.findByIdAndUpdate(req.body.thread_id, 
       { 
-      $push: { posts: newPost }
+      $push: { posts: newPost },
       }, 
       {
         new: true,
@@ -173,6 +175,7 @@ server.delete("/thread/:id", function (req, res) {
             })
             return;
     }
+    res.status(201).json(thread.posts[thread.posts.length - 1]);
     })
   });
 
@@ -198,10 +201,25 @@ server.delete("/thread/:id", function (req, res) {
         res.status(404).json({
                 message: `thread with id: ${req.params.id} does not exist`,
                 error: err
-            })
+            });
             return;
       }
-    });
+      let post;
+      thread.posts.forEach((e) => {
+        if (e._id == req.params.post_id) {
+          post = e;
+        }
+      });
+      if (post == undefined) {
+        res.status(404).json({
+          error: err,
+          message: "could not find post"
+        });
+        return;
+      }
+        res.status(200).json(post)
+      }
+    );
   });
 
 
