@@ -62,7 +62,7 @@ var app = new Vue({
                 category:this.new_category,
             };
             //push the new thread to threads list
-            fetch(this.server_url+"/thread",{
+            fetch(this.url+"/thread",{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json"

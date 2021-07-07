@@ -81,7 +81,7 @@ ul li {
 
 footer {
     grid-column: 1 / -1;
-    grid-row: 3 / 4;
+    bottom: 0;
     background-color: #94766a;
     text-align: center;
     color: white
