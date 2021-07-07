@@ -102,8 +102,8 @@ server.use((req, res, next) => {
 
   let creatingThread = {
       name: req.body.name || "",
-      description: req.body.author || "",
-      done: req.body.description || "",
+      author: req.body.author || "",
+      description: req.body.description || "",
       category: req.body.category || ""
   };
 

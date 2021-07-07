@@ -73,7 +73,7 @@ var app = new Vue({
                 app.getThreads();
                 app.new_name="";
                 app.new_author="";
-                app.new_description="";
+                app.new_description = "";
                 app.category="all";
                 app.page="forum";
 
@@ -83,27 +83,9 @@ var app = new Vue({
         },
         
 
-        // createThread: function(){
-        //     // var for new thread
-        //     // new_name.... etc
-        //     var new_thread = {
-        //         name: this.new_name,
-        //         author: this.new_author,
-        //         description: this.new_description,
-        //         category: this.new_category,
-        //         posts: []
-        //     }
-        //     this.threads.unshift(new_thread)
-        //     this.new_name = "";
-        //     this.new_author = "";
-        //     this.new_description = "",
-        //     this.category = "all";
-        //     this.page = "forum";
-        // },
         
-        // deleteThread: function(index){
-        //     this.threads.splice(index, 1)
-        // },
+        
+       
 
         deleteThread: function( id ) {
             fetch(this.url +"/thread/"+ id,{
@@ -115,9 +97,7 @@ var app = new Vue({
         },
         
         getPosts: function(thread_id){
-            // this.postings = this.threads[index].posts
-            // this.index = index;
-            // this.page = "posts"
+            
                 fetch(this.url+"/thread/" + thread_id).then(function(response){
                     response.json().then(function(data){
                         console.log(data);
@@ -131,19 +111,7 @@ var app = new Vue({
             //change page to posts
 
         createPost: function(thread_id){
-        //     var new_post = {
-        //         author: this.new_author,
-        //         body: this.new_body
-        //     }
-        //     this.postings.unshift(new_post)
-        //     this.new_author = "",
-        //     this.new_body = "",
-        //     this.page = "posts"
-        // },
-
-        // deletePost: function(index){
-        //     this.postings.splice(index, 1)
-        // }
+       
         var new_post= { 
             thread_id: thread_id,
             author: this.new_author,
