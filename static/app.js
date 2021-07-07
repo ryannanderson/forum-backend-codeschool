@@ -52,34 +52,34 @@ var app = new Vue({
             })
         },
 
+        
         createThread: function(){
-            var request_body= { 
+            // var for a new thread
+            var new_thread={
                 name: this.new_name,
-                author: this.new_author,
-                description: this.new_description,
-                category: this.new_category
+                author:this.new_author,
+                description:this.new_description,
+                category:this.new_category,
             };
-            fetch(this.url +"/thread",{
+            //push the new thread to threads list
+            fetch(this.server_url+"/thread",{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json"
                 },
-                body:JSON.stringify(request_body)
-            }).then(function(response){
-                console.log(request_body)
-                if(response.status == 400){
-                    response.json().then(function(data){
-                        alert(data.msg)
-                    })
-                }else if(response.status == 201){
-                    app.new_name="";
-                    app.new_author="";
-                    app.new_description="";
-                    app.new_category = "all"
-                    app.page = "forum";
-                    app.getThreads();
-                }
-            });
+                body:JSON.stringify(new_thread)
+            }).then(function(){
+                //clear the inputs
+                app.getThreads();
+                app.new_name="";
+                app.new_author="";
+                app.new_description="";
+                app.category="all";
+                app.page="forum";
+
+            })
+
+
         },
         
 
