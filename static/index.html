@@ -67,6 +67,7 @@
 
     <!-- if page is posts -->
     <div v-else-if= "page == 'posts'">
+        <div class="box-around">
         <!-- display thread that was clicked on -->
         <h2> {{ postings.name}}</h2>
         <p> {{ postings.author }}</p>
@@ -76,11 +77,14 @@
         <div v-show="postings.length == 0">
             {{ posts_empty }}
         </div>
+        </div>
         <ul>
             <li v-for="post in postings.posts">
+                <div class="box-around">
                 <p class="author-name"> {{ post.author }} </p>
                 <p> {{ post.body }} </p>
                 <button v-on:click="deletePost(post)" class="button">Delete</button>
+                </div>
             </li>
         </ul>
         
